@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cfleuret <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/16 17:00:28 by cfleuret          #+#    #+#             */
-/*   Updated: 2024/10/31 11:18:54 by cfleuret         ###   ########.fr       */
+/*   Created: 2025/01/13 17:14:51 by cfleuret          #+#    #+#             */
+/*   Updated: 2025/02/05 13:18:04 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
 
 static int	ft_count(const char *s, char c)
@@ -34,13 +35,42 @@ static int	ft_count(const char *s, char c)
 	return (n);
 }
 
+void	ft_free(char **tab)
+{
+	int	i;
+
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+}
+
+static char	*ft_strndup(const char *s, int start, int len)
+{
+	char	*str;
+	int		i;
+
+	str = (char *)malloc((len + 1) * sizeof(char));
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		str[i] = s[start + i];
+		i++;
+	}
+	str[len] = '\0';
+	return (str);
+}
+
 static char	**ft_separate(const char *s, char c, char **tab, int n)
 {
 	int	i;
 	int	start;
-	int	l;
 	int	j;
-	int	k;
 
 	i = 0;
 	j = -1;
@@ -51,14 +81,12 @@ static char	**ft_separate(const char *s, char c, char **tab, int n)
 		start = i;
 		while (s[i] != c && s[i] != '\0')
 			i++;
-		l = i - start;
-		tab[j] = (char *)malloc((l + 1) * sizeof(char));
-		if (tab[j] == NULL)
+		tab[j] = ft_strndup(s, start, i - start);
+		if (!tab[j])
+		{
+			ft_free(tab);
 			return (NULL);
-		k = -1;
-		while (k++ < l)
-			tab[j][k] = s[start + k];
-		tab[j][l] = '\0';
+		}
 	}
 	return (tab);
 }
@@ -66,42 +94,44 @@ static char	**ft_separate(const char *s, char c, char **tab, int n)
 char	**ft_split(const char *s, char c)
 {
 	char	**tab;
-	int		n;
+	int		i;
 
-	if (!s)
+	i = 0;
+	if (s[0] == '\0')
 		return (NULL);
-	n = ft_count(s, c);
-	tab = (char **)malloc((n + 1) * sizeof(char *));
-	if (tab == NULL)
+	i = ft_count(s, c);
+	tab = (char **)malloc((i + 1) * sizeof(char *));
+	if (!tab)
 		return (NULL);
-	if (n == 0)
-	{
-		tab[0] = NULL;
-		return (tab);
-	}
-	tab = ft_separate(s, c, tab, n);
-	if (tab == NULL)
-		return (NULL);
-	tab[n] = NULL;
+	if (i != 0)
+		tab = ft_separate(s, c, tab, i);
+	tab[i] = NULL;
 	return (tab);
 }
 
-/*int    main(void)
-{
-    char    **tab;
-    int        i;
+// int    main(void)
+// {
+//     char    **tab;
+//     int        i;
 
-    tab = ft_split("hello!", ' ');
-    if (tab == NULL)
-    {
-        printf(NULL);
-        return (1);
-    }
-    i = 0;
-    while (tab[i])
-    {
-        printf("%s\n", tab[i]);
-        i++;
-    }
-    return (0);
-}*/
+//     tab = ft_split("1 2 3", ' ');
+//     if (tab == NULL)
+//     {
+//         printf("NULL");
+//         return (1);
+//     }
+//     i = 0;
+//     while (tab[i])
+//     {
+//         printf("%s\n", tab[i]);
+//         i++;
+//     }
+//     i = 0;
+//     while (tab[i])
+//     {
+//         free(tab[i]);
+//         i++;
+//     }
+//     free(tab);
+//     return (0);
+// }

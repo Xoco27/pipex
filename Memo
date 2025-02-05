@@ -1,0 +1,16 @@
+DUP2(2) change l'output de fd : dup2(fd, STDOUT_FILENO);
+ACCESS(2) check les acces d'un fichier : if (access("example.txt", R_OK) != -1)
+EXECVE(2) permet d'executer un programme depuis celui utilise : execve("/bin/ls", args, NULL)
+FORK(2) cree un processus enfant, clone du parent, dans un espace memoire different : 
+pid_t pid;
+pid = fork();
+PIPE(8) sert a la communication interprocessus
+(donc un enfant peut ecrire et un parent lire par exemple)
+UNLINK(1) sert a supprimer un fichier : 
+if (unlink("example.txt") == 0)
+printf("File successfully deleted");
+WAIT(2) suspend l'execution d'un processus tant que l'enfant n'a pas termine
+Si on veut fournir des données en dur dans le script → << LIMITER
+Si on veut traiter un fichier existant → < file1
+Si on veut ajouter au fichier de sortie → >> file
+Si on veut remplacer le fichier de sortie → > file
