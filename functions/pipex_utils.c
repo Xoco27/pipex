@@ -6,7 +6,7 @@
 /*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:55:25 by cfleuret          #+#    #+#             */
-/*   Updated: 2025/02/06 16:41:13 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/10 18:01:27 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,3 +25,10 @@ void	free_str(char **str)
 	free(str);
 }
 
+void	error(void)
+{
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
+	exit(EXIT_FAILURE);
+}
