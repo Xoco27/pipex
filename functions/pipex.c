@@ -6,7 +6,7 @@
 /*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 15:01:05 by cfleuret          #+#    #+#             */
-/*   Updated: 2025/02/10 18:18:40 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/11 17:02:24 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static char	*find_path(char *cmd, char **envp)
 	return (0);
 }
 
-static void	execute(char *argv, char **envp)
+static void	execute(char *argv, char **envp, int *fd)
 {
 	char	**cmd;
 	char	*path;
@@ -51,15 +51,15 @@ static void	execute(char *argv, char **envp)
 	if (!path)
 	{
 		free_str(cmd);
-		perror("path");
-		error();
+		ft_printf(2, "%s: command not found\n", cmd[0]);
+		error(fd);
 	}
 	if (execve(path, cmd, envp) == -1)
 	{
 		free_str(cmd);
 		free(path);
-		perror("execve");
-		error();
+		ft_printf(2, "%s: command not found\n", cmd[0]);
+		error(fd);
 	}
 }
 
@@ -70,7 +70,7 @@ static void	child_process(int *fd, char **argv, char **envp)
 	fd_in = open(argv[1], O_RDONLY, 0644);
 	if (fd_in == -1)
 	{
-		perror("fd");
+		ft_printf(2, "%s: no such file or directory\n", argv[1]);
 		close(fd[0]);
 		close(fd[1]);
 		exit(EXIT_FAILURE);
@@ -80,7 +80,7 @@ static void	child_process(int *fd, char **argv, char **envp)
 	close(fd_in);
 	close(fd[1]);
 	close(fd[0]);
-	execute(argv[2], envp);
+	execute(argv[2], envp, fd);
 }
 
 static void	parent_process(int *fd, char **argv, char **envp)
@@ -90,7 +90,7 @@ static void	parent_process(int *fd, char **argv, char **envp)
 	fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd_out == -1)
 	{
-		perror("fd");
+		ft_printf(2, "%s: no such file or directory\n", argv[4]);
 		close(fd[0]);
 		close(fd[1]);
 		exit(EXIT_FAILURE);
@@ -100,7 +100,7 @@ static void	parent_process(int *fd, char **argv, char **envp)
 	close(fd_out);
 	close(fd[0]);
 	close(fd[1]);
-	execute(argv[3], envp);
+	execute(argv[3], envp, fd);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -111,22 +111,19 @@ int	main(int argc, char **argv, char **envp)
 	if (argc == 5)
 	{
 		if (pipe(fd) == -1)
-			return (perror("Pipe"), 1);
+			return (ft_printf(2, "pipe: Resource unavailable"), 1);
 		pid = fork();
 		if (pid < 0)
-		{
-			close(fd[0]);
-			close(fd[1]);
-			return (perror("Pipe"), 1);
-		}
+			return (ft_printf(2, "fork: Resource unavailable"), 1);
 		if (pid == 0)
 			child_process(fd, argv, envp);
 		waitpid(pid, NULL, 0);
 		parent_process(fd, argv, envp);
 		close(fd[0]);
 		close(fd[1]);
+		waitpid(pid, NULL, 0);
 	}
 	else
-		return (1);
+		return (ft_printf(2, "Wrong arguments\n"), 1);
 	return (0);
 }

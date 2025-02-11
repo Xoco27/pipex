@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cfleuret <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 12:22:42 by cfleuret          #+#    #+#             */
-/*   Updated: 2024/10/29 17:38:19 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/07 12:46:06 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef LIBFT_H
 # define LIBFT_H
 
@@ -20,6 +21,7 @@
 # include <limits.h>
 # include <fcntl.h>
 # include <stdint.h>
+# include <sys/wait.h>
 
 typedef struct s_list
 {

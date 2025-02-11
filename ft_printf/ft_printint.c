@@ -3,41 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printint.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cfleuret <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 11:12:45 by cfleuret          #+#    #+#             */
-/*   Updated: 2024/11/07 10:59:09 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:27:24 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "ft_printf.h"
 
-static int	ft_putchar(int l, char c)
+static int	ft_putchar(int fd, int l, char c)
 {
-	write (1, &c, 1);
+	write (fd, &c, 1);
 	return (l + 1);
 }
 
-static int	ft_putnbr(int l, int nb)
+static int	ft_putnbr(int fd, int l, int nb)
 {
 	if (nb == -2147483648)
 	{
-		write (1, "-2147483648", 11);
+		write (fd, "-2147483648", 11);
 		return (l + 11);
 	}
 	if (nb < 0)
 	{
-		l = ft_putchar (l, '-');
+		l = ft_putchar (fd, l, '-');
 		nb *= -1;
 	}
 	if (nb >= 10)
-		l = ft_putnbr(l, nb / 10);
-	l = ft_putchar(l, nb % 10 + '0');
+		l = ft_putnbr(fd, l, nb / 10);
+	l = ft_putchar(fd, l, nb % 10 + '0');
 	return (l);
 }
 
-int	ft_printint(int l, int a)
+int	ft_printint(int fd, int l, int a)
 {
-	l = ft_putnbr(l, a);
+	l = ft_putnbr(fd, l, a);
 	return (l);
 }
 /*int	main(void)

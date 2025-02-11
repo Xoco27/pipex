@@ -3,43 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cfleuret <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 12:24:01 by cfleuret          #+#    #+#             */
-/*   Updated: 2024/11/14 14:09:36 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/11 16:27:26 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "ft_printf.h"
 
-static int	ft_putchar(int l, char c)
+static int	ft_putchar(int fd, int l, char c)
 {
-	write(1, &c, 1);
+	write(fd, &c, 1);
 	return (l + 1);
 }
 
-static int	ft_check(char c, int l, va_list a)
+static int	ft_check(int fd, char c, int l, va_list a)
 {
 	int	t;
 
 	t = 0;
 	if (c == 'c')
-		l = ft_putchar(l, (char)va_arg(a, int));
+		l = ft_putchar(fd, l, (char)va_arg(a, int));
 	if (c == 's')
-		l = ft_printstring(l, va_arg(a, char *));
+		l = ft_printstring(fd, l, va_arg(a, char *));
 	if (c == 'p')
-		l = ft_printptr(t, l, va_arg(a, void *));
+		l = ft_printptr(fd, t, l, va_arg(a, void *));
 	if (c == 'd' || c == 'i')
-		l = ft_printint(l, va_arg(a, int));
+		l = ft_printint(fd, l, va_arg(a, int));
 	if (c == 'u')
-		l = ft_printuns(l, va_arg(a, unsigned int));
+		l = ft_printuns(fd, l, va_arg(a, unsigned int));
 	if (c == 'x' || c == 'X')
-		l = ft_printhex(c, l, va_arg(a, unsigned int));
+		l = ft_printhex(fd, c, l, va_arg(a, unsigned int));
 	if (c == '%')
-		l = ft_putchar(l, c);
+		l = ft_putchar(fd, l, c);
 	return (l);
 }
 
-int	ft_printf(const char *f, ...)
+int	ft_printf(int fd, const char *f, ...)
 {
 	va_list	a;
 	int		i;
@@ -54,12 +55,12 @@ int	ft_printf(const char *f, ...)
 	{
 		if (f[i] == '%')
 		{
-			l = ft_check(f[i + 1], l, a);
+			l = ft_check(fd, f[i + 1], l, a);
 			i++;
 		}
 		else
 		{
-			ft_putchar(l, f[i]);
+			ft_putchar(fd, l, f[i]);
 			l++;
 		}
 		i++;
