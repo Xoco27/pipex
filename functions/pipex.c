@@ -6,22 +6,22 @@
 /*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/31 15:01:05 by cfleuret          #+#    #+#             */
-/*   Updated: 2025/02/11 17:02:24 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/13 14:48:25 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static char	*find_path(char *cmd, char **envp)
+static char	*find_path(char *cmd, char **envp, int i)
 {
 	char	**paths;
 	char	*path;
-	int		i;
 	char	*part_path;
 
-	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+	while (envp[i] && ft_strnstr(envp[i], "PATH", 4) == 0)
 		i++;
+	if (!envp[i])
+		return (0);
 	paths = ft_split(envp[i] + 5, ':');
 	i = 0;
 	while (paths[i])
@@ -29,7 +29,7 @@ static char	*find_path(char *cmd, char **envp)
 		part_path = ft_strjoin(paths[i], "/");
 		path = ft_strjoin(part_path, cmd);
 		free(part_path);
-		if (access(path, F_OK) == 0)
+		if (access(path, F_OK | X_OK) == 0)
 		{
 			free_str(paths);
 			return (path);
@@ -45,21 +45,23 @@ static void	execute(char *argv, char **envp, int *fd)
 {
 	char	**cmd;
 	char	*path;
+	int		i;
 
+	i = 0;
 	cmd = ft_split(argv, ' ');
-	path = find_path(cmd[0], envp);
+	path = find_path(cmd[0], envp, i);
 	if (!path)
 	{
-		free_str(cmd);
 		ft_printf(2, "%s: command not found\n", cmd[0]);
-		error(fd);
+		free_str(cmd);
+		if (fd)
+			error(fd);
 	}
 	if (execve(path, cmd, envp) == -1)
 	{
-		free_str(cmd);
 		free(path);
 		ft_printf(2, "%s: command not found\n", cmd[0]);
-		error(fd);
+		free_str(cmd);
 	}
 }
 
@@ -81,6 +83,7 @@ static void	child_process(int *fd, char **argv, char **envp)
 	close(fd[1]);
 	close(fd[0]);
 	execute(argv[2], envp, fd);
+	exit(EXIT_FAILURE);
 }
 
 static void	parent_process(int *fd, char **argv, char **envp)
@@ -101,12 +104,38 @@ static void	parent_process(int *fd, char **argv, char **envp)
 	close(fd[0]);
 	close(fd[1]);
 	execute(argv[3], envp, fd);
+	exit(EXIT_FAILURE);
 }
+
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	int		fd[2];
+// 	pid_t	pid;
+
+// 	if (argc == 5)
+// 	{
+// 		if (pipe(fd) == -1)
+// 			return (ft_printf(2, "pipe: Resource unavailable"), 1);
+// 		pid = fork();
+// 		if (pid < 0)
+// 			return (ft_printf(2, "fork: Resource unavailable"), 1);
+// 		if (pid == 0)
+// 			child_process(fd, argv, envp);
+// 		parent_process(fd, argv, envp);
+// 		close(fd[0]);
+// 		close(fd[1]);
+// 		waitpid(pid, NULL, 0);
+// 	}
+// 	else
+// 		return (ft_printf(2, "Wrong arguments\n"), 1);
+// 	return (0);
+// }
 
 int	main(int argc, char **argv, char **envp)
 {
 	int		fd[2];
 	pid_t	pid;
+	pid_t	pid2;
 
 	if (argc == 5)
 	{
@@ -117,13 +146,16 @@ int	main(int argc, char **argv, char **envp)
 			return (ft_printf(2, "fork: Resource unavailable"), 1);
 		if (pid == 0)
 			child_process(fd, argv, envp);
-		waitpid(pid, NULL, 0);
-		parent_process(fd, argv, envp);
+		pid2 = fork();
+		if (pid2 < 0)
+			return (ft_printf(2, "fork: Resource unavailable"), 1);
+		if (pid2 == 0)
+			parent_process(fd, argv, envp);
 		close(fd[0]);
 		close(fd[1]);
 		waitpid(pid, NULL, 0);
+		waitpid(pid2, NULL, 0);
 	}
 	else
 		return (ft_printf(2, "Wrong arguments\n"), 1);
-	return (0);
 }
