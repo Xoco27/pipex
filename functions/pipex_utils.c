@@ -6,7 +6,7 @@
 /*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:55:25 by cfleuret          #+#    #+#             */
-/*   Updated: 2025/02/12 14:38:55 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:10:27 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,28 @@ void	error(int *fd)
 	close(fd[0]);
 	close(fd[1]);
 	exit(EXIT_FAILURE);
+}
+
+char	*find_absolute(char *cmd)
+{
+	int		i;
+	int		j;
+	char	*ncmd;
+
+	i = ft_strlen(cmd);
+	while (cmd[i] != '/' && i != 0)
+		i--;
+	if (i == 0)
+		return (cmd);
+	ncmd = malloc(sizeof(char) * (ft_strlen(cmd) - i + 1));
+	j = 0;
+	while (cmd[i])
+	{
+		ncmd[j] = cmd[i];
+		i++;
+		j++;
+	}
+	ncmd[j] = '\0';
+	free(cmd);
+	return (ncmd);
 }
