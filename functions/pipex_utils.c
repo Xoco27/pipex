@@ -6,7 +6,7 @@
 /*   By: cfleuret <cfleuret@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 17:55:25 by cfleuret          #+#    #+#             */
-/*   Updated: 2025/02/13 17:10:27 by cfleuret         ###   ########.fr       */
+/*   Updated: 2025/02/18 10:51:34 by cfleuret         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ char	*find_absolute(char *cmd)
 		i--;
 	if (i == 0)
 		return (cmd);
+	i++;
 	ncmd = malloc(sizeof(char) * (ft_strlen(cmd) - i + 1));
 	j = 0;
 	while (cmd[i])

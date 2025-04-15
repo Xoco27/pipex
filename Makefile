@@ -8,7 +8,7 @@ OBJ_DIR = obj
 LIBFT_DIR = libft
 PRINTF_DIR = ft_printf
 
-PIPEX = $(wildcard $(SRC_DIR)/*.c)
+PIPEX = functions/pipex.c functions/pipex_utils.c
 
 OBJS = $(PIPEX:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
